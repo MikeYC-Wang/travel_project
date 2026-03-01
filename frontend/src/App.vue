@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+
+const siteName = ref('旅人日誌')
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="app-wrapper">
+    <nav class="navbar">
+      <div class="logo">
+        <font-awesome-icon icon="compass" /> {{ siteName }}
+      </div>
+      <ul class="nav-links">
+        <li><a href="#" class="active"><font-awesome-icon icon="house" /> 首頁</a></li>
+        <li><a href="#"><font-awesome-icon icon="plane-departure" /> 找機票</a></li>
+        <li><a href="#"><font-awesome-icon icon="coins" /> 看匯率</a></li>
+        <li><a href="#"><font-awesome-icon icon="map-location-dot" /> 排行程</a></li>
+      </ul>
+    </nav>
+
+    <main class="main-content">
+      <div class="hero-section">
+        <h1>準備好你的下一趟旅程了嗎？</h1>
+        <p>整合最划算機票、即時匯率與智能行程規劃的一站式服務</p>
+      </div>
+    </main>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<style scoped src="./assets/css/App.css"></style>

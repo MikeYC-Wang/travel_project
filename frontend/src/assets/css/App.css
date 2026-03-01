@@ -1,0 +1,99 @@
+/* frontend/src/assets/css/App.css */
+
+/* 設定全域變數，方便統一管理顏色 */
+:root {
+  --primary-color: #2c3e50;
+  --text-color: #333333;
+  --bg-color: #f4f7f6;
+  /* 柔和的海洋/天空藍漸層色，排除螢光色 */
+  --nav-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 上方導覽列設計 */
+.navbar {
+  background: var(--nav-gradient);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.logo {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 滑鼠移過去或當前頁面的特效 */
+.nav-links a:hover, .nav-links a.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 主要內容區塊 */
+.main-content {
+  flex: 1;
+  padding: 3rem 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-section {
+  text-align: center;
+  background: white;
+  padding: 4rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 800px;
+}
+
+.hero-section h1 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.hero-section p {
+  color: #666;
+  font-size: 1.1rem;
+}
