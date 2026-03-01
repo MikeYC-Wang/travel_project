@@ -1,7 +1,29 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const siteName = ref('旅人日誌')
+// 用來記錄目前是否為深色模式
+const isDarkMode = ref(false)
+
+// 切換主題的函式
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value
+  const theme = isDarkMode.value ? 'dark' : 'light'
+  
+  // 在 HTML 根元素加上 data-theme 屬性，觸發 theme.css 的深色變數
+  document.documentElement.setAttribute('data-theme', theme)
+  // 把設定存起來，下次進網頁才不會跑掉
+  localStorage.setItem('site-theme', theme)
+}
+
+// 網頁一載入時，先去檢查之前有沒有存過設定
+onMounted(() => {
+  const savedTheme = localStorage.getItem('site-theme')
+  if (savedTheme === 'dark') {
+    isDarkMode.value = true
+    document.documentElement.setAttribute('data-theme', 'dark')
+  }
+})
 </script>
 
 <template>
@@ -15,6 +37,13 @@ const siteName = ref('旅人日誌')
         <li><a href="#"><font-awesome-icon icon="plane-departure" /> 找機票</a></li>
         <li><a href="#"><font-awesome-icon icon="coins" /> 看匯率</a></li>
         <li><a href="#"><font-awesome-icon icon="map-location-dot" /> 排行程</a></li>
+        
+        <li>
+          <a href="#" @click.prevent="toggleTheme">
+            <font-awesome-icon :icon="isDarkMode ? 'sun' : 'moon'" />
+            {{ isDarkMode ? 'Light' : 'Dark' }}
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -27,4 +56,4 @@ const siteName = ref('旅人日誌')
   </div>
 </template>
 
-<style scoped src="./assets/css/App.css"></style>
+<style src="./assets/css/App.css"></style>

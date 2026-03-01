@@ -1,13 +1,5 @@
 /* frontend/src/assets/css/App.css */
-
-/* 設定全域變數，方便統一管理顏色 */
-:root {
-  --primary-color: #2c3e50;
-  --text-color: #333333;
-  --bg-color: #f4f7f6;
-  /* 柔和的海洋/天空藍漸層色，排除螢光色 */
-  --nav-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
+@import './theme.css';
 
 * {
   box-sizing: border-box;
@@ -19,26 +11,36 @@ body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
+  /* 加上 transition 讓切換主題時顏色會柔和漸變 */
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .app-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 76px; 
 }
 
 /* 上方導覽列設計 */
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  
   background: var(--nav-gradient);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: background 0.4s ease;
 }
 
 .logo {
-  color: white;
+  color: var(--nav-text-color);
   font-size: 1.5rem;
   font-weight: bold;
   display: flex;
@@ -53,23 +55,21 @@ body {
 }
 
 .nav-links a {
-  color: white;
+  color: var(--nav-text-color);
   text-decoration: none;
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* 滑鼠移過去或當前頁面的特效 */
 .nav-links a:hover, .nav-links a.active {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--nav-hover-bg);
 }
 
-/* 主要內容區塊 */
 .main-content {
   flex: 1;
   padding: 3rem 2rem;
@@ -79,21 +79,27 @@ body {
 
 .hero-section {
   text-align: center;
-  background: white;
+  /* 這裡改吃 theme.css 的卡片背景色變數 */
+  background: var(--card-bg);
   padding: 4rem 2rem;
   border-radius: 12px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.05);
   width: 100%;
   max-width: 800px;
+  margin: 0 auto; 
+  transition: background-color 0.4s ease;
 }
 
 .hero-section h1 {
   color: var(--primary-color);
   margin-bottom: 1rem;
   font-size: 2rem;
+  transition: color 0.4s ease;
 }
 
 .hero-section p {
-  color: #666;
+  /* 文字顏色也要根據主題變換，這裡統一用全域文字色 */
+  color: var(--text-color);
   font-size: 1.1rem;
+  opacity: 0.8;
 }
