@@ -103,3 +103,30 @@ body {
   font-size: 1.1rem;
   opacity: 0.8;
 }
+
+.theme-btn {
+  background: var(--btn-bg);
+  border: 1px solid transparent; 
+  cursor: pointer;
+  /* 這裡改用 nav-text-color 讓按鈕字體顏色與選單一致 */
+  color: var(--nav-text-color); 
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* 將原本的 :global(body.theme-dark) 改為我們的切換邏輯選擇器 */
+[data-theme="dark"] .theme-btn {
+  border: 1px solid var(--border-color);
+}
+
+.theme-btn:hover {
+  background: var(--btn-hover);
+  transform: translateY(-2px);
+}

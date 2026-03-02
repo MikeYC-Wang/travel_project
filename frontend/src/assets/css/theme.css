@@ -1,23 +1,35 @@
-/* 預設：淺色模式 (Light Mode) */
+/* 預設：淺色模式 (白金 White-Gold) */
 :root {
-  --primary-color: #2c3e50;
+  --primary-color: #b38728; /* 金色強調色 */
   --text-color: #333333;
-  --bg-color: #f4f7f6;
+  --bg-color: #fdfcfb;      /* 帶有一點點暖意的珍珠白 */
   --card-bg: #ffffff;
-  /* 柔和的海洋/天空藍漸層色 */
-  --nav-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  --nav-text-color: #ffffff;
-  --nav-hover-bg: rgba(255, 255, 255, 0.2);
+  
+  /* 白金漸層導覽列 */
+  --nav-gradient: linear-gradient(135deg, #ffffff 0%, #f4ebd0 100%);
+  --nav-text-color: #5a4a29; /* 導覽列字體用深金棕色，比純黑更有整體感 */
+  --nav-hover-bg: rgba(179, 135, 40, 0.1);
+
+  /* 主題切換按鈕專用變數 */
+  --btn-bg: #f5eedc;
+  --btn-hover: #e8d8b0;
+  --border-color: #d4c49d;
 }
 
-/* 深色模式 (Dark Mode) - 參考你個人網站的深色質感 */
+/* 深色模式 (黑金 Black-Gold) */
 [data-theme="dark"] {
-  --primary-color: #64ffda; /* 稍微亮一點的點綴色，在深色中比較顯眼 */
-  --text-color: #e6f1ff;
-  --bg-color: #0a192f;      /* 深藍黑色背景 */
-  --card-bg: #112240;       /* 卡片顏色稍微比背景亮一點點，做出層次 */
-  /* 深色模式的導覽列改用深沉的漸層 */
-  --nav-gradient: linear-gradient(135deg, #112240 0%, #0a192f 100%);
-  --nav-text-color: #e6f1ff;
-  --nav-hover-bg: rgba(100, 255, 218, 0.1);
+  --primary-color: #d4af37; /* 經典的亮金屬色 */
+  --text-color: #e8e8e8;
+  --bg-color: #121212;      /* 幾乎純黑的背景 */
+  --card-bg: #1c1c1c;       /* 稍微跳出來的深灰色卡片 */
+  
+  /* 黑金漸層導覽列 */
+  --nav-gradient: linear-gradient(135deg, #1f1c18 0%, #000000 100%);
+  --nav-text-color: #d4af37; /* 導覽列字體改為亮金色 */
+  --nav-hover-bg: rgba(212, 175, 55, 0.15);
+
+  /* 主題切換按鈕專用變數 */
+  --btn-bg: #2a2415;
+  --btn-hover: #3d341f;
+  --border-color: #d4af37;
 }
