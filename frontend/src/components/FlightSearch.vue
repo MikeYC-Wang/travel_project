@@ -5,10 +5,14 @@ const departure = ref('')
 const destination = ref('')
 const departDate = ref('')
 const returnDate = ref('')
-const passengers = ref(1)
+const passengers = ref(0)
 
-// 模擬送出表單的動作
 const searchFlights = () => {
+  if (passengers.value === 0) {
+    alert('請至少選擇 1 位旅客！')
+    return
+  }
+
   console.log('準備搜尋機票，條件：', {
     departure: departure.value,
     destination: destination.value,
@@ -18,6 +22,7 @@ const searchFlights = () => {
   })
   alert('準備開始搜尋機票！(目前為純前端畫面，稍後會串接後端 API)')
 }
+
 </script>
 
 <template>
@@ -47,11 +52,11 @@ const searchFlights = () => {
       <div class="form-group">
         <label><font-awesome-icon icon="user" /> 旅客</label>
         <div class="passenger-counter">
-          <button type="button" class="counter-btn" @click="passengers > 1 ? passengers-- : null" :disabled="passengers <= 1">
+          <button type="button" class="counter-btn" @click="passengers > 0 ? passengers-- : null" :disabled="passengers <= 0">
             <font-awesome-icon icon="minus" />
           </button>
           
-          <input type="number" v-model="passengers" min="1" readonly />
+          <input type="number" v-model="passengers" min="0" readonly />
           
           <button type="button" class="counter-btn" @click="passengers++">
             <font-awesome-icon icon="plus" />
