@@ -25,6 +25,7 @@
 
 /* 深色模式 (黑金 Black-Gold 金屬反光版) */
 [data-theme="dark"] {
+  color-scheme: dark;
   /* 1. 更亮、更純粹的亮金色，自帶微發光感 */
   --primary-color: #FFD700; 
   --text-color: #e8e8e8;

@@ -1,0 +1,185 @@
+.flight-search-container {
+  margin-top: 3rem;
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+}
+
+[data-theme="dark"] .flight-search-container {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 calc(33.333% - 1.5rem);
+  min-width: 180px;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin-bottom: 0.8rem;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.4s ease;
+  opacity: 0.9;
+}
+
+.form-group label svg {
+  color: #8c7b60; 
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .form-group label svg {
+  color: #9ba1a6; 
+}
+
+/* ================= 輸入框共用樣式 ================= */
+.form-group input {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--text-color);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  width: 100%; /* 確保寬度統一 */
+}
+
+[data-theme="dark"] .form-group input {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.form-group input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.form-group:focus-within label svg {
+  color: var(--primary-color);
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+  transform: scale(1.1);
+}
+
+/* 隱藏原生 number input 的上下箭頭 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+/* 旅客數量外框 (包裝加減按鈕與輸入框) */
+.passenger-counter {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden; /* 讓按鈕的圓角被包在裡面 */
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .passenger-counter {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.passenger-counter:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+/* 旅客輸入框本身的重置 */
+.passenger-counter input {
+  border: none;
+  background: transparent;
+  text-align: center;
+  padding: 12px 0;
+  border-radius: 0;
+}
+
+[data-theme="dark"] .passenger-counter input {
+  border: none;
+  background: transparent;
+}
+
+.passenger-counter input:focus {
+  box-shadow: none; /* 移除獨立發光，改由外層 passenger-counter 發光 */
+}
+
+/* 加減按鈕樣式 */
+.counter-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  padding: 0 15px;
+  height: 100%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.counter-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .counter-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.counter-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  flex: 1 1 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.submit-btn {
+  background: var(--btn-bg);
+  color: var(--nav-text-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--btn-shadow);
+  padding: 14px 40px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.submit-btn:hover {
+  background: var(--btn-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
