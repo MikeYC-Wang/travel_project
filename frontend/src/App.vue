@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 
 const siteName = ref('旅人日誌')
-// 配合你的按鈕程式碼，將變數名稱改為 isDark
 const isDark = ref(false)
 
 const toggleTheme = () => {
@@ -26,7 +25,7 @@ onMounted(() => {
   <div class="app-wrapper">
     <nav class="navbar">
       <div class="logo">
-        <font-awesome-icon icon="compass" /> {{ siteName }}
+        <font-awesome-icon icon="plane" /> {{ siteName }}
       </div>
       <ul class="nav-links">
         <li><a href="#" class="active"><font-awesome-icon icon="house" /> 首頁</a></li>

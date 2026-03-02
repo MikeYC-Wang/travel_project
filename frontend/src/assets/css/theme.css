@@ -1,35 +1,54 @@
 /* 預設：淺色模式 (白金 White-Gold) */
 :root {
-  --primary-color: #b38728; /* 金色強調色 */
+  --primary-color: #b38728;
   --text-color: #333333;
-  --bg-color: #fdfcfb;      /* 帶有一點點暖意的珍珠白 */
-  --card-bg: #ffffff;
   
-  /* 白金漸層導覽列 */
+  --bg-color: #fdfcfb;
+  --bg-image: none; 
+  
+  --card-bg: #ffffff;
+  --card-bg-image: none;
+  --card-border: 1px solid transparent;
+  --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  
   --nav-gradient: linear-gradient(135deg, #ffffff 0%, #f4ebd0 100%);
-  --nav-text-color: #5a4a29; /* 導覽列字體用深金棕色，比純黑更有整體感 */
+  --nav-text-color: #5a4a29;
   --nav-hover-bg: rgba(179, 135, 40, 0.1);
+  --nav-border-bottom: 1px solid rgba(0,0,0,0.05);
 
-  /* 主題切換按鈕專用變數 */
   --btn-bg: #f5eedc;
   --btn-hover: #e8d8b0;
   --border-color: #d4c49d;
+  --btn-shadow: none;
+  --title-glow: none;
 }
 
-/* 深色模式 (黑金 Black-Gold) */
+/* 深色模式 (黑金 Black-Gold 金屬反光版) */
 [data-theme="dark"] {
-  --primary-color: #d4af37; /* 經典的亮金屬色 */
+  /* 1. 更亮、更純粹的亮金色，自帶微發光感 */
+  --primary-color: #FFD700; 
   --text-color: #e8e8e8;
-  --bg-color: #121212;      /* 幾乎純黑的背景 */
-  --card-bg: #1c1c1c;       /* 稍微跳出來的深灰色卡片 */
+  --title-glow: 0 0 12px rgba(255, 215, 0, 0.4); /* 文字的金色光芒 */
   
-  /* 黑金漸層導覽列 */
-  --nav-gradient: linear-gradient(135deg, #1f1c18 0%, #000000 100%);
-  --nav-text-color: #d4af37; /* 導覽列字體改為亮金色 */
-  --nav-hover-bg: rgba(212, 175, 55, 0.15);
+  /* 2. 背景：極深底色 + 頂部中央打光的金屬反射漸層 */
+  --bg-color: #050505;
+  --bg-image: radial-gradient(circle at 50% 0%, rgba(75, 75, 75, 0.4) 0%, rgba(0, 0, 0, 0) 60%);
+  
+  /* 3. 卡片：深黑色金屬表面 + 頂部高光內陰影 (金屬邊角反光) + 金色邊框 */
+  --card-bg: #121212;
+  --card-bg-image: linear-gradient(145deg, rgba(60,60,60,0.4) 0%, rgba(0,0,0,0) 100%);
+  --card-border: 1px solid rgba(255, 215, 0, 0.25);
+  --card-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 15px 30px rgba(0,0,0,0.9);
+  
+  /* 4. 導覽列：帶有厚度與頂部微光的拉絲金屬漸層 */
+  --nav-gradient: linear-gradient(to bottom, #2d2d2d 0%, #151515 30%, #000000 100%);
+  --nav-text-color: #FFD700;
+  --nav-hover-bg: rgba(255, 215, 0, 0.15);
+  --nav-border-bottom: 1px solid rgba(255, 215, 0, 0.4);
 
-  /* 主題切換按鈕專用變數 */
-  --btn-bg: #2a2415;
-  --btn-hover: #3d341f;
-  --border-color: #d4af37;
+  /* 5. 按鈕：立體金屬按鈕 */
+  --btn-bg: linear-gradient(145deg, #2a2a2a, #0a0a0a);
+  --btn-hover: linear-gradient(145deg, #3d3d3d, #1a1a1a);
+  --border-color: #FFD700;
+  --btn-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
 }

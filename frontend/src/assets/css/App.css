@@ -7,11 +7,13 @@
   padding: 0;
 }
 
+/* 修改 body，加入背景圖片反射與固定屬性 */
 body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--bg-color);
+  background-image: var(--bg-image); /* 載入金屬打光 */
+  background-attachment: fixed;      /* 滾動時光源會固定在上方，更有真實感 */
   color: var(--text-color);
-  /* 加上 transition 讓切換主題時顏色會柔和漸變 */
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
@@ -31,12 +33,13 @@ body {
   z-index: 1000;
   
   background: var(--nav-gradient);
+  border-bottom: var(--nav-border-bottom); /* 導覽列底部的金色反光線 */
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: background 0.4s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: background 0.4s ease, border-bottom 0.4s ease;
 }
 
 .logo {
@@ -77,38 +80,42 @@ body {
   justify-content: center;
 }
 
+/* 修改 .hero-section，載入卡片的金屬邊框與陰影 */
 .hero-section {
   text-align: center;
-  /* 這裡改吃 theme.css 的卡片背景色變數 */
-  background: var(--card-bg);
+  background-color: var(--card-bg);
+  background-image: var(--card-bg-image); /* 卡片的金屬斜面光澤 */
+  border: var(--card-border);             /* 卡片的金屬邊框 */
+  box-shadow: var(--card-shadow);         /* 立體陰影與高光 */
   padding: 4rem 2rem;
   border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
   width: 100%;
   max-width: 800px;
   margin: 0 auto; 
-  transition: background-color 0.4s ease;
+  transition: background-color 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
 }
 
+/* 修改 h1 標題，加入金色的霓虹微光 */
 .hero-section h1 {
   color: var(--primary-color);
+  text-shadow: var(--title-glow); /* 讓金色字體發亮 */
   margin-bottom: 1rem;
   font-size: 2rem;
-  transition: color 0.4s ease;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
 }
 
 .hero-section p {
-  /* 文字顏色也要根據主題變換，這裡統一用全域文字色 */
   color: var(--text-color);
   font-size: 1.1rem;
   opacity: 0.8;
 }
 
+/* 修改 .theme-btn，加入 3D 立體陰影 */
 .theme-btn {
   background: var(--btn-bg);
-  border: 1px solid transparent; 
+  border: 1px solid var(--border-color); /* 自動跟隨主題切換邊框顏色 */
+  box-shadow: var(--btn-shadow);         /* 按鈕的立體高光 */
   cursor: pointer;
-  /* 這裡改用 nav-text-color 讓按鈕字體顏色與選單一致 */
   color: var(--nav-text-color); 
   padding: 8px 16px;
   border-radius: 20px;
@@ -119,11 +126,6 @@ body {
   font-weight: bold;
   font-size: 0.9rem;
   white-space: nowrap;
-}
-
-/* 將原本的 :global(body.theme-dark) 改為我們的切換邏輯選擇器 */
-[data-theme="dark"] .theme-btn {
-  border: 1px solid var(--border-color);
 }
 
 .theme-btn:hover {
