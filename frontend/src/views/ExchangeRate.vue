@@ -15,19 +15,18 @@ const amount = ref(100)
 const fromCurrency = ref('TWD')
 const toCurrency = ref('JPY')
 
-// 儲存後端回傳的結果
 const exchangeResult = ref<number | null>(null)
 const currentRate = ref<number | null>(null)
+const lastUpdate = ref<string>('') // 👈 新增：用來存最後更新時間
 const isLoading = ref(false)
 
 const swapCurrencies = () => {
   const temp = fromCurrency.value
   fromCurrency.value = toCurrency.value
   toCurrency.value = temp
-  exchangeResult.value = null // 切換幣別時清空舊結果
+  exchangeResult.value = null 
 }
 
-// 呼叫後端 FastAPI
 const calculateRate = async () => {
   if (amount.value <= 0) return
   
@@ -35,13 +34,19 @@ const calculateRate = async () => {
   exchangeResult.value = null
   
   try {
-    // 呼叫我們自己寫的 FastAPI 端點
     const response = await fetch(`http://localhost:8000/api/exchange?amount=${amount.value}&from_currency=${fromCurrency.value}&to_currency=${toCurrency.value}`)
     const data = await response.json()
     
     if (data.status === 'success') {
       exchangeResult.value = data.converted_amount
       currentRate.value = data.rate
+      
+      // 👈 新增：將後端傳來的 UTC 時間轉換為台灣當地的易讀格式
+      const dateObj = new Date(data.last_update)
+      lastUpdate.value = dateObj.toLocaleString('zh-TW', { 
+        year: 'numeric', month: '2-digit', day: '2-digit', 
+        hour: '2-digit', minute: '2-digit', hour12: false 
+      })
     } else {
       alert('計算失敗：' + data.detail)
     }
@@ -104,6 +109,12 @@ const calculateRate = async () => {
         </div>
         <div class="rate-info">
           當前匯率：1 {{ fromCurrency }} = {{ currentRate }} {{ toCurrency }}
+        </div>
+        
+        <div class="disclaimer">
+          <font-awesome-icon icon="circle-info" /> 
+          此為全球中價匯率，僅供行程預算參考，實際換匯請依各銀行之牌告/即期匯率為準。<br>
+          資料最後更新時間：{{ lastUpdate }}
         </div>
       </div>
 

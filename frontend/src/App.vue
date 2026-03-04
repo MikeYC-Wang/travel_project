@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-// 引入剛剛寫好的機票搜尋元件
-import FlightSearch from './components/FlightSearch.vue'
 
 const siteName = ref('旅人日誌')
 const isDark = ref(false)
@@ -30,10 +28,10 @@ onMounted(() => {
         <font-awesome-icon icon="plane" /> {{ siteName }}
       </div>
       <ul class="nav-links">
-        <li><a href="#" class="active"><font-awesome-icon icon="house" /> 首頁</a></li>
-        <li><a href="#"><font-awesome-icon icon="plane-departure" /> 找機票</a></li>
-        <li><a href="#"><font-awesome-icon icon="coins" /> 看匯率</a></li>
-        <li><a href="#"><font-awesome-icon icon="map-location-dot" /> 排行程</a></li>
+        <li><router-link to="/" active-class="active"><font-awesome-icon icon="house" /> 首頁</router-link></li>
+        <li><router-link to="/flights" active-class="active"><font-awesome-icon icon="plane-departure" /> 找機票</router-link></li>
+        <li><router-link to="/exchange-rate" active-class="active"><font-awesome-icon icon="coins" /> 看匯率</router-link></li>
+        <li><router-link to="/itinerary" active-class="active"><font-awesome-icon icon="map-location-dot" /> 排行程</router-link></li>
         
         <li>
           <button class="theme-btn" @click="toggleTheme" :title="isDark ? '切換到淺色模式' : '切換到深色模式'">
@@ -46,13 +44,7 @@ onMounted(() => {
     </nav>
 
     <main class="main-content">
-      <div class="hero-section">
-        <h1>準備好你的下一趟旅程了嗎？</h1>
-        <p>整合最划算機票、即時匯率與智能行程規劃的一站式服務</p>
-        
-        <FlightSearch />
-        
-      </div>
+      <router-view></router-view>
     </main>
   </div>
 </template>

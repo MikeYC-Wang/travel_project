@@ -219,6 +219,26 @@
   color: #aaa;
 }
 
+.disclaimer {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  font-size: 0.85rem;
+  color: #999;
+  line-height: 1.6;
+  text-align: center;
+}
+
+[data-theme="dark"] .disclaimer {
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  color: #888;
+}
+
+.disclaimer svg {
+  color: var(--primary-color);
+  margin-right: 4px;
+}
+
 @keyframes fadeInDown {
   from {
     opacity: 0;
