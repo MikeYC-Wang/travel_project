@@ -17,7 +17,6 @@ interface DayPlan {
 
 const itinerary = ref<DayPlan[]>([])
 
-// 1. 載入網頁時，去後端拿真實資料
 const fetchItinerary = async () => {
   try {
     const response = await fetch('http://localhost:8000/api/itinerary')
@@ -31,7 +30,6 @@ onMounted(() => {
   fetchItinerary()
 })
 
-// 2. 增加一天 (打 POST API)
 const addDay = async () => {
   const newDayNum = itinerary.value.length + 1
   await fetch('http://localhost:8000/api/itinerary/days', {
@@ -39,10 +37,9 @@ const addDay = async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ day_number: newDayNum, date: '' })
   })
-  fetchItinerary() // 重新抓資料刷新畫面
+  fetchItinerary()
 }
 
-// 3. 新增行程 (先彈出空的編輯視窗，把 id 設為 0 當作判斷)
 const addActivity = (dayId: number) => {
   editingDayId.value = dayId
   editingActivity.value = { id: 0, time: '10:00', title: '', location: '' }
@@ -52,10 +49,55 @@ const addActivity = (dayId: number) => {
 // ==================== 彈窗控制與儲存邏輯 ====================
 const showActivityModal = ref(false)
 const showDateModal = ref(false)
+const showAiModal = ref(false) // 👈 新增：控制 AI 彈窗
 
 const editingActivity = ref<Activity | null>(null)
 const editingDayId = ref<number | null>(null)
 const editingDate = ref('')
+
+// 👈 新增：AI 生成所需的變數
+const aiDestination = ref('東京')
+const aiDays = ref(3)
+const aiStartDate = ref('')
+const isAiLoading = ref(false)
+
+// 🚀 呼叫後端 AI 生成 API
+const generateAiItinerary = async () => {
+  if (!aiDestination.value || aiDays.value < 1 || !aiStartDate.value) {
+    alert('請完整填寫目的地、天數與出發日期！')
+    return
+  }
+
+  isAiLoading.value = true
+  try {
+    const response = await fetch('http://localhost:8000/api/itinerary/ai-generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        destination: aiDestination.value,
+        days: aiDays.value,
+        start_date: aiStartDate.value
+      })
+    })
+
+    const data = await response.json()
+    if (data.status === 'success') {
+      showAiModal.value = false
+      await fetchItinerary() // 重新抓取生成好的資料
+      
+      // 順便把設定清空，方便下次使用
+      aiDestination.value = ''
+      aiDays.value = 3
+      aiStartDate.value = ''
+    } else {
+      alert('AI 生成失敗：' + data.detail)
+    }
+  } catch (error) {
+    alert('無法連線到後端 API！')
+  } finally {
+    isAiLoading.value = false
+  }
+}
 
 const openActivityModal = (dayId: number, activity: Activity) => {
   editingDayId.value = dayId
@@ -63,41 +105,27 @@ const openActivityModal = (dayId: number, activity: Activity) => {
   showActivityModal.value = true
 }
 
-// 4. 儲存行程 (判斷是新增還是更新)
 const saveActivity = async () => {
   if (editingActivity.value && editingDayId.value) {
     const act = editingActivity.value
-    
     if (act.id === 0) {
-      // id 為 0，代表是新增 (POST)
       await fetch('http://localhost:8000/api/itinerary/activities', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          day_id: editingDayId.value,
-          time: act.time,
-          title: act.title,
-          location: act.location
-        })
+        body: JSON.stringify({ day_id: editingDayId.value, time: act.time, title: act.title, location: act.location })
       })
     } else {
-      // 有 id，代表是更新舊資料 (PUT)
       await fetch(`http://localhost:8000/api/itinerary/activities/${act.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          time: act.time,
-          title: act.title,
-          location: act.location
-        })
+        body: JSON.stringify({ time: act.time, title: act.title, location: act.location })
       })
     }
   }
   closeModal()
-  fetchItinerary() // 儲存完畢，刷新畫面
+  fetchItinerary()
 }
 
-// 5. 刪除行程 (DELETE)
 const deleteActivity = async () => {
   if (editingActivity.value && editingActivity.value.id !== 0) {
     if (confirm('確定要刪除這個行程嗎？')) {
@@ -122,7 +150,6 @@ const openDateModal = (day: DayPlan) => {
   showDateModal.value = true
 }
 
-// 6. 儲存日期 (PUT)
 const saveDate = async () => {
   if (editingDayId.value) {
     await fetch(`http://localhost:8000/api/itinerary/days/${editingDayId.value}`, {
@@ -147,7 +174,21 @@ const closeDateModal = () => {
     <h1><font-awesome-icon icon="map-location-dot" /> 我的專屬行程表</h1>
     <p>輕鬆規劃每一天，讓完美旅程化為現實</p>
 
+    <div class="top-actions">
+      <button class="ai-btn" @click="showAiModal = true">
+        <font-awesome-icon icon="wand-magic-sparkles" /> AI 智能排行程
+      </button>
+      <button class="submit-btn add-day-btn-top" @click="addDay">
+        <font-awesome-icon icon="calendar-plus" /> 增加一天
+      </button>
+    </div>
+
     <div class="itinerary-board">
+      <div v-if="itinerary.length === 0" class="empty-state">
+        <font-awesome-icon icon="box-open" size="3x" />
+        <p>目前還沒有行程喔！點擊上方按鈕開始規劃吧！</p>
+      </div>
+
       <div v-for="day in itinerary" :key="day.id" class="day-card">
         <div class="day-header">
           <h2>第 {{ day.dayNumber }} 天</h2>
@@ -177,16 +218,40 @@ const closeDateModal = () => {
       </div>
     </div>
 
-    <div class="form-actions">
-      <button class="submit-btn add-day-btn" @click="addDay">
-        <font-awesome-icon icon="calendar-plus" /> 增加一天
-      </button>
+    <div v-if="showAiModal" class="modal-overlay" @click.self="!isAiLoading ? showAiModal = false : null">
+      <div class="modal-content ai-modal">
+        <h3><font-awesome-icon icon="wand-magic-sparkles" /> 讓 AI 為您規劃</h3>
+        <p class="ai-desc">輸入您的需求，AI 將自動為您生成每日行程與推薦景點！</p>
+        
+        <div class="form-group">
+          <label>目的地</label>
+          <input type="text" v-model="aiDestination" placeholder="例如：東京、巴黎、首爾" :disabled="isAiLoading" />
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group half">
+            <label>旅遊天數</label>
+            <input type="number" v-model="aiDays" min="1" max="14" :disabled="isAiLoading" />
+          </div>
+          <div class="form-group half">
+            <label>出發日期</label>
+            <input type="date" v-model="aiStartDate" :disabled="isAiLoading" />
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="cancel-btn" @click="showAiModal = false" :disabled="isAiLoading">取消</button>
+          <button class="ai-submit-btn" @click="generateAiItinerary" :disabled="isAiLoading">
+            <font-awesome-icon :icon="isAiLoading ? 'spinner' : 'robot'" :spin="isAiLoading" /> 
+            {{ isAiLoading ? 'AI 腦力激盪中...' : '開始生成' }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <div v-if="showActivityModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <h3><font-awesome-icon icon="pen-to-square" /> 編輯行程</h3>
-        
         <div class="form-group" v-if="editingActivity">
           <label>時間</label>
           <input type="time" v-model="editingActivity.time" />
@@ -199,7 +264,6 @@ const closeDateModal = () => {
           <label>地點</label>
           <input type="text" v-model="editingActivity.location" placeholder="例如：成田國際機場" />
         </div>
-        
         <div class="modal-actions">
           <button class="icon-btn delete-btn" @click="deleteActivity" title="刪除行程" style="margin-right: auto;">
             <font-awesome-icon icon="trash" />
@@ -217,7 +281,6 @@ const closeDateModal = () => {
           <label>選擇日期</label>
           <input type="date" v-model="editingDate" />
         </div>
-        
         <div class="modal-actions">
           <button class="cancel-btn" @click="closeDateModal">取消</button>
           <button class="save-btn" @click="saveDate">儲存</button>
