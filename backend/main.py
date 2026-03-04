@@ -190,7 +190,7 @@ async def generate_ai_itinerary(req: AIGenerateRequest, db: Session = Depends(ge
         
         # 2. 使用新版套件呼叫 Gemini 生成內容
         response = ai_client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-2.5-flash',
             contents=prompt
         )
         response_text = response.text.strip()
