@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
-// 定義行程的資料結構
 interface Activity {
   id: number
   time: string
@@ -16,45 +15,41 @@ interface DayPlan {
   activities: Activity[]
 }
 
-const itinerary = ref<DayPlan[]>([
-  {
-    id: 1,
-    dayNumber: 1,
-    date: '2026-05-10',
-    activities: [
-      { id: 101, time: '10:00', title: '抵達機場', location: '成田國際機場 (NRT)' },
-      { id: 102, time: '13:30', title: '飯店 Check-in', location: '新宿格拉斯麗飯店' },
-      { id: 103, time: '18:00', title: '晚餐：和牛燒肉', location: '敘敘苑 新宿中央東口店' }
-    ]
-  }
-])
+const itinerary = ref<DayPlan[]>([])
 
-const addDay = () => {
+// 1. 載入網頁時，去後端拿真實資料
+const fetchItinerary = async () => {
+  try {
+    const response = await fetch('http://localhost:8000/api/itinerary')
+    itinerary.value = await response.json()
+  } catch (error) {
+    console.error("無法取得行程資料", error)
+  }
+}
+
+onMounted(() => {
+  fetchItinerary()
+})
+
+// 2. 增加一天 (打 POST API)
+const addDay = async () => {
   const newDayNum = itinerary.value.length + 1
-  itinerary.value.push({
-    id: Date.now(),
-    dayNumber: newDayNum,
-    date: '',
-    activities: []
+  await fetch('http://localhost:8000/api/itinerary/days', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ day_number: newDayNum, date: '' })
   })
+  fetchItinerary() // 重新抓資料刷新畫面
 }
 
-// 新增行程時，直接自動打開編輯彈窗
+// 3. 新增行程 (先彈出空的編輯視窗，把 id 設為 0 當作判斷)
 const addActivity = (dayId: number) => {
-  const day = itinerary.value.find(d => d.id === dayId)
-  if (day) {
-    const newActivity = {
-      id: Date.now(),
-      time: '00:00',
-      title: '新行程',
-      location: '新地點'
-    }
-    day.activities.push(newActivity)
-    openActivityModal(day.id, newActivity) // 👈 新增完自動彈出讓使用者改
-  }
+  editingDayId.value = dayId
+  editingActivity.value = { id: 0, time: '10:00', title: '', location: '' }
+  showActivityModal.value = true
 }
 
-// ==================== 彈窗控制邏輯 ====================
+// ==================== 彈窗控制與儲存邏輯 ====================
 const showActivityModal = ref(false)
 const showDateModal = ref(false)
 
@@ -62,37 +57,57 @@ const editingActivity = ref<Activity | null>(null)
 const editingDayId = ref<number | null>(null)
 const editingDate = ref('')
 
-// 1. 打開「行程」編輯彈窗
 const openActivityModal = (dayId: number, activity: Activity) => {
   editingDayId.value = dayId
-  // 💡 重點：使用淺拷貝 { ...activity }，這樣在彈窗打字時才不會直接影響到底下的畫面
   editingActivity.value = { ...activity }
   showActivityModal.value = true
 }
 
-// 儲存行程
-const saveActivity = () => {
-  if (editingDayId.value && editingActivity.value) {
-    const day = itinerary.value.find(d => d.id === editingDayId.value)
-    if (day) {
-      const index = day.activities.findIndex(a => a.id === editingActivity.value!.id)
-      if (index !== -1) {
-        day.activities[index] = { ...editingActivity.value } // 把改好的資料覆蓋回去
-      }
+// 4. 儲存行程 (判斷是新增還是更新)
+const saveActivity = async () => {
+  if (editingActivity.value && editingDayId.value) {
+    const act = editingActivity.value
+    
+    if (act.id === 0) {
+      // id 為 0，代表是新增 (POST)
+      await fetch('http://localhost:8000/api/itinerary/activities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          day_id: editingDayId.value,
+          time: act.time,
+          title: act.title,
+          location: act.location
+        })
+      })
+    } else {
+      // 有 id，代表是更新舊資料 (PUT)
+      await fetch(`http://localhost:8000/api/itinerary/activities/${act.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          time: act.time,
+          title: act.title,
+          location: act.location
+        })
+      })
     }
   }
   closeModal()
+  fetchItinerary() // 儲存完畢，刷新畫面
 }
 
-// 刪除行程
-const deleteActivity = () => {
-  if (editingDayId.value && editingActivity.value) {
-    const day = itinerary.value.find(d => d.id === editingDayId.value)
-    if (day) {
-      day.activities = day.activities.filter(a => a.id !== editingActivity.value!.id)
+// 5. 刪除行程 (DELETE)
+const deleteActivity = async () => {
+  if (editingActivity.value && editingActivity.value.id !== 0) {
+    if (confirm('確定要刪除這個行程嗎？')) {
+      await fetch(`http://localhost:8000/api/itinerary/activities/${editingActivity.value.id}`, {
+        method: 'DELETE'
+      })
     }
   }
   closeModal()
+  fetchItinerary()
 }
 
 const closeModal = () => {
@@ -101,22 +116,23 @@ const closeModal = () => {
   editingDayId.value = null
 }
 
-// 2. 打開「日期」編輯彈窗
 const openDateModal = (day: DayPlan) => {
   editingDayId.value = day.id
   editingDate.value = day.date
   showDateModal.value = true
 }
 
-// 儲存日期
-const saveDate = () => {
+// 6. 儲存日期 (PUT)
+const saveDate = async () => {
   if (editingDayId.value) {
-    const day = itinerary.value.find(d => d.id === editingDayId.value)
-    if (day) {
-      day.date = editingDate.value
-    }
+    await fetch(`http://localhost:8000/api/itinerary/days/${editingDayId.value}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: editingDate.value })
+    })
   }
   closeDateModal()
+  fetchItinerary()
 }
 
 const closeDateModal = () => {
