@@ -12,9 +12,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import Session, relationship
 from pydantic import BaseModel
 
-# 引入 dotenv 與 Google Gemini 套件
 import dotenv
-import google.generativeai as genai
+from google import genai
 
 from database import SessionLocal, engine, Base
 
@@ -22,11 +21,8 @@ from database import SessionLocal, engine, Base
 # 載入 .env 檔案中的環境變數
 dotenv.load_dotenv()
 
-# 設定 Gemini API Key (請確保你有在 backend 資料夾下建立 .env 檔案並填入 GEMINI_API_KEY)
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-# 初始化模型 (選用 flash 版本，速度最快)
-ai_model = genai.GenerativeModel('gemini-1.5-flash')
+# 初始化新版的 Gemini Client (它會自動去讀取 .env 裡的 GEMINI_API_KEY)
+ai_client = genai.Client()
 
 
 # ==================== 資料庫模型 (DB Models) ====================
@@ -167,7 +163,7 @@ def delete_activity(act_id: int, db: Session = Depends(get_db)):
         db.commit()
     return {"status": "success"}
 
-# 7. 真實 AI 智能排行程 (呼叫 Gemini API 並自動寫入資料庫)
+# 7. 真實 AI 智能排行程 (呼叫新版 Gemini API 並自動寫入資料庫)
 @app.post("/api/itinerary/ai-generate")
 async def generate_ai_itinerary(req: AIGenerateRequest, db: Session = Depends(get_db)):
     try:
@@ -192,8 +188,11 @@ async def generate_ai_itinerary(req: AIGenerateRequest, db: Session = Depends(ge
         ]
         """
         
-        # 2. 呼叫 Gemini 生成內容
-        response = ai_model.generate_content(prompt)
+        # 2. 使用新版套件呼叫 Gemini 生成內容
+        response = ai_client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=prompt
+        )
         response_text = response.text.strip()
         
         # 3. 防呆處理：清除 AI 可能夾帶的 Markdown 標記
