@@ -1,0 +1,181 @@
+.itinerary-section {
+  max-width: 900px; /* 行程表通常需要寬一點的版面 */
+}
+
+.itinerary-board {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 每一天的金屬卡片 */
+.day-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05), 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+  text-align: left;
+}
+
+[data-theme="dark"] .day-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  box-shadow: inset 0 2px 15px rgba(0, 0, 0, 0.5), 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.day-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-color);
+  margin: 0;
+  text-shadow: var(--title-glow);
+}
+
+.day-date {
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* 時間軸設計 */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  position: relative;
+  padding-left: 10px;
+}
+
+/* 時間軸左側的那條線 */
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10px;
+  width: 2px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .timeline::before {
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+
+[data-theme="dark"] .activity-item {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.activity-item:hover {
+  transform: translateX(5px);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+/* 時間軸上的金屬小圓點 */
+.activity-item::before {
+  content: '';
+  position: absolute;
+  left: -6px; /* 對齊那條線 */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 3px solid var(--card-bg);
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  z-index: 1;
+}
+
+.activity-time {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  min-width: 60px;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-content h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+}
+
+.activity-content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+[data-theme="dark"] .activity-content p {
+  color: #aaa;
+}
+
+/* 圖示按鈕 (編輯) */
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  color: var(--primary-color);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+/* 新增行程按鈕 (虛線框) */
+.add-activity-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 12px;
+  background: transparent;
+  border: 2px dashed rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+[data-theme="dark"] .add-activity-btn {
+  border: 2px dashed rgba(255, 215, 0, 0.3);
+}
+
+.add-activity-btn:hover {
+  opacity: 1;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.add-day-btn {
+  margin-top: 1rem;
+}
