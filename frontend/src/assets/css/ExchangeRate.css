@@ -1,4 +1,6 @@
-.flight-search-container {
+/* frontend/src/assets/css/ExchangeRate.css */
+
+.exchange-container {
   margin-top: 3rem;
   padding: 2.5rem;
   background: rgba(255, 255, 255, 0.05);
@@ -8,25 +10,30 @@
   transition: all 0.4s ease;
 }
 
-[data-theme="dark"] .flight-search-container {
+[data-theme="dark"] .exchange-container {
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-.search-form {
+.exchange-form {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
   justify-content: space-between;
+  align-items: flex-end; /* 讓切換按鈕跟輸入框底部對齊 */
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  flex: 1 1 calc(33.333% - 1.5rem);
-  min-width: 180px;
+  flex: 1 1 calc(28% - 1.5rem);
+  min-width: 140px;
   text-align: left;
+}
+
+.amount-group {
+  flex: 1 1 calc(20% - 1.5rem); /* 金額框稍微窄一點 */
 }
 
 .form-group label {
@@ -50,8 +57,10 @@
   color: #9ba1a6; 
 }
 
-/* ================= 輸入框共用樣式 ================= */
-.form-group input {
+/* ================= 輸入框與下拉選單共用樣式 ================= */
+.form-group input,
+.select-wrapper select {
+  width: 100%;
   padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.15);
@@ -60,15 +69,35 @@
   font-size: 1rem;
   outline: none;
   transition: all 0.3s ease;
-  width: 100%; /* 確保寬度統一 */
+  appearance: none; /* 隱藏原生下拉箭頭 */
+  cursor: pointer;
 }
 
-[data-theme="dark"] .form-group input {
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .select-wrapper select {
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(0, 0, 0, 0.3);
 }
 
-.form-group input:focus {
+/* 客製化下拉箭頭 */
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: "▼";
+  font-size: 0.7rem;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* 讓滑鼠點擊能穿透到 select */
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+.form-group input:focus,
+.select-wrapper select:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
   background: rgba(255, 255, 255, 0.05);
@@ -80,83 +109,42 @@
   transform: scale(1.1);
 }
 
-/* 隱藏原生 number input 的上下箭頭 */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  appearance: none;
-  margin: 0;
-}
-input[type="number"] {
-  -moz-appearance: textfield; /* Firefox */
-  appearance: textfield;
+/* ================= 切換幣別按鈕 ================= */
+.swap-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 5px; /* 微調高度對齊輸入框 */
 }
 
-/* 旅客數量外框 (包裝加減按鈕與輸入框) */
-.passenger-counter {
-  display: flex;
-  align-items: center;
+.swap-btn {
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  overflow: hidden; /* 讓按鈕的圓角被包在裡面 */
-  transition: all 0.3s ease;
+  color: var(--text-color);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 彈性旋轉動畫 */
 }
 
-[data-theme="dark"] .passenger-counter {
+[data-theme="dark"] .swap-btn {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.passenger-counter:focus-within {
+.swap-btn:hover {
+  background: var(--primary-color);
+  color: #000; /* 懸停時圖示變黑色，對比更強 */
   border-color: var(--primary-color);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+  transform: rotate(180deg) scale(1.1); /* 點擊時旋轉180度並微微放大 */
 }
 
-/* 旅客輸入框本身的重置 */
-.passenger-counter input {
-  border: none;
-  background: transparent;
-  text-align: center;
-  padding: 12px 0;
-  border-radius: 0;
-}
-
-[data-theme="dark"] .passenger-counter input {
-  border: none;
-  background: transparent;
-}
-
-.passenger-counter input:focus {
-  box-shadow: none; /* 移除獨立發光，改由外層 passenger-counter 發光 */
-}
-
-/* 加減按鈕樣式 */
-.counter-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-color);
-  padding: 0 15px;
-  height: 100%;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-}
-
-.counter-btn:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--primary-color);
-}
-
-[data-theme="dark"] .counter-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.counter-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
+/* ================= 送出按鈕 (與首頁共用) ================= */
 .form-actions {
   flex: 1 1 100%;
   display: flex;
