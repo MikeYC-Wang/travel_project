@@ -49,23 +49,24 @@ const addActivity = (dayId: number) => {
 // ==================== 彈窗控制邏輯 ====================
 const showActivityModal = ref(false)
 const showDateModal = ref(false)
-const showAiModal = ref(false)
-const showSingleAiModal = ref(false) // 單日 AI 彈窗
+const showAiModal = ref(false) 
+const showSingleAiModal = ref(false) 
 
 const editingActivity = ref<Activity | null>(null)
 const editingDayId = ref<number | null>(null)
 const editingDate = ref('')
 
 // ==================== AI 全局設定變數 ====================
-const aiDestination = ref('東京')
+const aiDestination = ref('') // 👈 這裡已經清空，沒有預設的東京了
 const aiDays = ref(3)
 const aiStartDate = ref('')
-const aiArrivalTime = ref('') // 抵達時間
-const aiNotes = ref('')       // 備註需求
+const aiArrivalTime = ref('') 
+const aiNotes = ref('')       
 const isAiLoading = ref(false)
 
 // ==================== AI 單日設定變數 ====================
 const singleAiDayId = ref<number | null>(null)
+const singleAiDestination = ref('') // 讓單日重排也能獨立設定地點
 const singleAiNotes = ref('')
 const isSingleAiLoading = ref(false)
 
@@ -94,7 +95,8 @@ const generateAiItinerary = async () => {
     if (data.status === 'success') {
       showAiModal.value = false
       await fetchItinerary() 
-      // 清空設定
+      
+      // 生成完畢後，不清空目的地，保留給單日重排使用，只清空其他設定
       aiDays.value = 3
       aiStartDate.value = ''
       aiArrivalTime.value = ''
@@ -112,14 +114,16 @@ const generateAiItinerary = async () => {
 // 🚀 開啟單日 AI 彈窗
 const openSingleAiModal = (dayId: number) => {
   singleAiDayId.value = dayId
+  // 自動帶入你剛剛在全局設定的目的地，方便你不用重打，但你可以自由修改
+  singleAiDestination.value = aiDestination.value 
   singleAiNotes.value = ''
   showSingleAiModal.value = true
 }
 
 // 🚀 呼叫後端 AI 重新生成 (單日)
 const generateSingleDayAi = async () => {
-  if (!singleAiDayId.value || !aiDestination.value) {
-    alert('請先在全局AI設定過目的地！')
+  if (!singleAiDayId.value || !singleAiDestination.value) {
+    alert('請輸入這天的目的地！')
     return
   }
   
@@ -129,7 +133,7 @@ const generateSingleDayAi = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        destination: aiDestination.value, 
+        destination: singleAiDestination.value, // 使用單獨的目的地
         notes: singleAiNotes.value || null
       })
     })
@@ -317,6 +321,11 @@ const closeDateModal = () => {
         <h3><font-awesome-icon icon="rotate" /> AI 單日重新規劃</h3>
         <p class="ai-desc">告訴 AI 您對這天的想法，讓它專門為這一天重新排程！</p>
         
+        <div class="form-group">
+          <label>單日目的地</label>
+          <input type="text" v-model="singleAiDestination" placeholder="例如：富士山、河口湖" :disabled="isSingleAiLoading" />
+        </div>
+
         <div class="form-group">
           <label>修改需求 / 備註</label>
           <textarea v-model="singleAiNotes" placeholder="例如：這天想安排整天在迪士尼、想去逛秋葉原..." rows="3" :disabled="isSingleAiLoading"></textarea>
