@@ -203,9 +203,10 @@ async def generate_ai_itinerary(req: AIGenerateRequest, db: Session = Depends(ge
         ai_itinerary_data = json.loads(response_text)
 
         # 5. 清除資料庫舊的行程 (為了讓畫面展示乾淨，實務上可做覆蓋或新增)
+        db.query(ActivityDB).delete()
         db.query(DayPlanDB).delete()
         db.commit()
-
+        
         # 6. 把 AI 給的資料結構化存入 PostgreSQL (或 SQLite)
         for day_data in ai_itinerary_data:
             day_num = day_data.get("day_number")
