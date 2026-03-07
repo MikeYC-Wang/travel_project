@@ -46,22 +46,30 @@ const addActivity = (dayId: number) => {
   showActivityModal.value = true
 }
 
-// ==================== 彈窗控制與儲存邏輯 ====================
+// ==================== 彈窗控制邏輯 ====================
 const showActivityModal = ref(false)
 const showDateModal = ref(false)
-const showAiModal = ref(false) // 👈 新增：控制 AI 彈窗
+const showAiModal = ref(false)
+const showSingleAiModal = ref(false) // 單日 AI 彈窗
 
 const editingActivity = ref<Activity | null>(null)
 const editingDayId = ref<number | null>(null)
 const editingDate = ref('')
 
-// 👈 新增：AI 生成所需的變數
+// ==================== AI 全局設定變數 ====================
 const aiDestination = ref('東京')
 const aiDays = ref(3)
 const aiStartDate = ref('')
+const aiArrivalTime = ref('') // 抵達時間
+const aiNotes = ref('')       // 備註需求
 const isAiLoading = ref(false)
 
-// 🚀 呼叫後端 AI 生成 API
+// ==================== AI 單日設定變數 ====================
+const singleAiDayId = ref<number | null>(null)
+const singleAiNotes = ref('')
+const isSingleAiLoading = ref(false)
+
+// 🚀 呼叫後端 AI 生成 API (全局)
 const generateAiItinerary = async () => {
   if (!aiDestination.value || aiDays.value < 1 || !aiStartDate.value) {
     alert('請完整填寫目的地、天數與出發日期！')
@@ -76,19 +84,21 @@ const generateAiItinerary = async () => {
       body: JSON.stringify({
         destination: aiDestination.value,
         days: aiDays.value,
-        start_date: aiStartDate.value
+        start_date: aiStartDate.value,
+        arrival_time: aiArrivalTime.value || null,
+        notes: aiNotes.value || null
       })
     })
 
     const data = await response.json()
     if (data.status === 'success') {
       showAiModal.value = false
-      await fetchItinerary() // 重新抓取生成好的資料
-      
-      // 順便把設定清空，方便下次使用
-      aiDestination.value = ''
+      await fetchItinerary() 
+      // 清空設定
       aiDays.value = 3
       aiStartDate.value = ''
+      aiArrivalTime.value = ''
+      aiNotes.value = ''
     } else {
       alert('AI 生成失敗：' + data.detail)
     }
@@ -96,6 +106,44 @@ const generateAiItinerary = async () => {
     alert('無法連線到後端 API！')
   } finally {
     isAiLoading.value = false
+  }
+}
+
+// 🚀 開啟單日 AI 彈窗
+const openSingleAiModal = (dayId: number) => {
+  singleAiDayId.value = dayId
+  singleAiNotes.value = ''
+  showSingleAiModal.value = true
+}
+
+// 🚀 呼叫後端 AI 重新生成 (單日)
+const generateSingleDayAi = async () => {
+  if (!singleAiDayId.value || !aiDestination.value) {
+    alert('請先在全局AI設定過目的地！')
+    return
+  }
+  
+  isSingleAiLoading.value = true
+  try {
+    const response = await fetch(`http://localhost:8000/api/itinerary/days/${singleAiDayId.value}/ai-regenerate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        destination: aiDestination.value, 
+        notes: singleAiNotes.value || null
+      })
+    })
+    const data = await response.json()
+    if (data.status === 'success') {
+      showSingleAiModal.value = false
+      await fetchItinerary()
+    } else {
+      alert('AI 重排失敗：' + data.detail)
+    }
+  } catch (error) {
+    alert('連線失敗！')
+  } finally {
+    isSingleAiLoading.value = false
   }
 }
 
@@ -191,12 +239,17 @@ const closeDateModal = () => {
 
       <div v-for="day in itinerary" :key="day.id" class="day-card">
         <div class="day-header">
-          <h2>第 {{ day.dayNumber }} 天</h2>
-          <span class="day-date" @click="openDateModal(day)" title="點擊設定日期">
-            <font-awesome-icon icon="calendar-day" /> 
-            {{ day.date || '設定日期' }}
-            <font-awesome-icon icon="pen" class="date-edit-btn" />
-          </span>
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <h2>第 {{ day.dayNumber }} 天</h2>
+            <span class="day-date" @click="openDateModal(day)" title="點擊設定日期">
+              <font-awesome-icon icon="calendar-day" /> 
+              {{ day.date || '設定日期' }}
+              <font-awesome-icon icon="pen" class="date-edit-btn" />
+            </span>
+          </div>
+          <button class="ai-btn-small" @click="openSingleAiModal(day.id)" title="讓AI重排這一天">
+            <font-awesome-icon icon="rotate" /> AI 重排此日
+          </button>
         </div>
 
         <div class="timeline">
@@ -238,12 +291,42 @@ const closeDateModal = () => {
             <input type="date" v-model="aiStartDate" :disabled="isAiLoading" />
           </div>
         </div>
+
+        <div class="form-group">
+          <label>抵達時間 (選填)</label>
+          <input type="time" v-model="aiArrivalTime" :disabled="isAiLoading" />
+        </div>
+
+        <div class="form-group">
+          <label>特別需求與備註 (選填)</label>
+          <textarea v-model="aiNotes" placeholder="例如：第一天想去吃和牛、行程不要排太緊..." rows="3" :disabled="isAiLoading"></textarea>
+        </div>
         
         <div class="modal-actions">
           <button class="cancel-btn" @click="showAiModal = false" :disabled="isAiLoading">取消</button>
           <button class="ai-submit-btn" @click="generateAiItinerary" :disabled="isAiLoading">
             <font-awesome-icon :icon="isAiLoading ? 'spinner' : 'robot'" :spin="isAiLoading" /> 
             {{ isAiLoading ? 'AI 腦力激盪中...' : '開始生成' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showSingleAiModal" class="modal-overlay" @click.self="!isSingleAiLoading ? showSingleAiModal = false : null">
+      <div class="modal-content ai-modal">
+        <h3><font-awesome-icon icon="rotate" /> AI 單日重新規劃</h3>
+        <p class="ai-desc">告訴 AI 您對這天的想法，讓它專門為這一天重新排程！</p>
+        
+        <div class="form-group">
+          <label>修改需求 / 備註</label>
+          <textarea v-model="singleAiNotes" placeholder="例如：這天想安排整天在迪士尼、想去逛秋葉原..." rows="3" :disabled="isSingleAiLoading"></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="cancel-btn" @click="showSingleAiModal = false" :disabled="isSingleAiLoading">取消</button>
+          <button class="ai-submit-btn" @click="generateSingleDayAi" :disabled="isSingleAiLoading">
+            <font-awesome-icon :icon="isSingleAiLoading ? 'spinner' : 'wand-magic-sparkles'" :spin="isSingleAiLoading" /> 
+            {{ isSingleAiLoading ? '重排中...' : '重新生成這天' }}
           </button>
         </div>
       </div>
